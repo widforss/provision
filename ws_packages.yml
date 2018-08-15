@@ -1,0 +1,109 @@
+---
+- packages:
+  - 
+    package: ansible
+    state: latest
+  -  
+    package: chromium-browser
+    state: latest
+  -
+    package: cryptmount
+    state: latest
+  -
+    package: curl
+    state: latest
+  - 
+    package: extremetuxracer
+    state: latest
+  -
+    package: imagemagick
+    state: latest
+  -  
+    package: fluxgui
+    state: latest
+  -  
+    package: gimp
+    state: latest
+  -  
+    package: iftop
+    state: latest
+  -  
+    package: iotop
+    state: latest
+  -
+    package: libpam-yubico
+    state: latest
+  -
+    package: pandoc
+    state: latest
+  -  
+    package: pass
+    state: latest
+  -
+    package: postgis
+    state: latest
+  -
+    package: postgresql-client
+    state: latest
+  -
+    package: postgresql-plpython-9.5
+    state: latest
+  -
+    package: postgresql-server-dev-all
+    state: latest
+  -  
+    package: qbittorrent
+    state: latest
+  -
+    package: qgis
+    state: latest
+  -  
+    package: scdaemon
+    state: latest
+  -  
+    package: spotify-client
+    state: latest
+  -
+    package: ssh
+    state: latest
+  -  
+    package: svtplay-dl
+    state: latest
+  -  
+    package: vlc
+    state: latest
+  -  
+    package: youtube-dl
+    state: latest
+  -  
+    package: yubikey-personalization
+    state: latest
+  -  
+    package: yubikey-personalization-gui
+    state: latest
+  -  
+    package: zsh
+    state: latest
+- keys:
+  # Ansible
+  - 6125E2A8C77F2818FB7BD15B93C4A3FD7BB9C367
+  # Spotify
+  - BBEBDCB318AD50EC6865090613B00F1FD2C19886
+  # F.lux
+  - 428926204FE30238F00B98224CDB129629A4B41A
+  # Videolan
+  - 3361E59FF5029E6B90A9A80D09589874801DF724
+  # Docker
+  - 58118E89F3A912897C070ADBF76221572C52609D
+- repos:
+  - deb http://ppa.launchpad.net/ansible/ansible/ubuntu bionic main
+  - deb http://repository.spotify.com stable non-free
+  - deb http://ppa.launchpad.net/nathan-renniewaldock/flux/ubuntu bionic main
+  - deb http://ppa.launchpad.net/videolan/stable-daily/ubuntu bionic main
+  - deb https://apt.dockerproject.org/repo ubuntu-bionic main
+- configuration:
+  -
+    package: libpam-yubico
+    question: libpam-yubico/module_args
+    value: mode=challenge-response
+    vtype: string

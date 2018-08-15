@@ -1,0 +1,93 @@
+---
+- name: Set up a standard workstation
+  hosts: localhost
+  become_user: root
+  vars_files:
+    - 'ws_packages.yml'
+
+  tasks:
+    - name: Add signing keys
+      apt_key:
+        keyserver: keyserver.ubuntu.com
+        id: '{{ item }}'
+      become: yes
+      with_items: '{{ keys }}'
+
+    - name: Add extra repos
+      apt_repository:
+        repo: '{{ item }}'
+      become: yes
+      with_items: '{{ repos }}'
+
+    - name: Configure packages
+      debconf:
+        name: '{{ item.package }}'
+        question: '{{ item.question }}'
+        value: '{{ item.value }}'
+        vtype: '{{ item.vtype }}'
+      become: yes
+      with_items: "{{ configuration }}"
+
+    - name: Install standard set of applications
+      apt:
+        name: '{{ item.package }}'
+        purge: yes
+        state: '{{ item.state }}'
+        dpkg_options: '{{item.dpkg_options|default(omit)}}'
+      become: yes
+      with_items: "{{ packages }}"
+
+    - name: Upgrade all
+      apt:
+        update_cache: yes
+        upgrade: full
+        autoremove: yes
+      become: yes
+
+    - name: Set zsh
+      user:
+        name: 'aron'
+        shell: '/bin/zsh'
+      become: yes
+
+    - name: Copy keyboard configuration
+      template:
+        dest: /usr/share/X11/xkb/rules/evdev.xml
+        src: ~/ansible/evdev.xml
+      become: yes
+
+    - name: Add Yubico module to authentication system
+      lineinfile:
+        dest: /etc/pam.d/common-auth
+        state: present
+        line: "auth required pam_yubico.so mode=challenge-response chalresp_path=/var/yubico"
+      become: yes
+
+    - name: Copy Yubikey udev rule
+      copy:
+        src: 85-yubikey-screen-lock.rules
+        dest: /etc/udev/rules.d/85-yubikey-screen-lock.rules
+      become: yes
+
+    - name: Copy Yubikey lock script
+      copy:
+        src: yubikey-screen-lock
+        dest: /usr/local/bin/yubikey-screen-lock
+        mode: '0755'
+      become: yes
+
+    - name: Reload udev rules
+      command: udevadm control --reload-rules
+      become: yes
+
+    - name: Allow outgoing connections
+      ufw: rule=allow direction=out
+      become: yes
+
+    - name: Allow qBittorrent connections
+      ufw: rule=allow direction=in to_port=8999 proto=tcp
+      become: yes
+
+    - name: Enable firewall
+      ufw: policy=deny state=enabled
+      become: yes
